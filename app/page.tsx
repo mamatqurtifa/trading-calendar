@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { format } from "date-fns";
 import Calendar from "./components/Calendar";
+import Header from "./components/Header";
 
 interface TradingActivity {
   tokenName: string;
@@ -118,20 +119,21 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-6">
-        Trading Activity for Today ({today})
-      </h1>
+      <Header />
 
-      {/* Form dan Activities dalam satu grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* Form Section */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">
-            Add New Trading Activity
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="card">
+          <div className="flex items-center gap-3 mb-6">
+            <i className="fas fa-plus-circle text-2xl icon-gradient"></i>
+            <h2 className="text-xl font-semibold">Add New Trading Activity</h2>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Token Name Input */}
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2 text-secondary">
+                <i className="fas fa-coins mr-2 text-accent-orange"></i>
                 Token Name *
               </label>
               <input
@@ -140,14 +142,17 @@ export default function Home() {
                 onChange={(e) =>
                   setFormData({ ...formData, tokenName: e.target.value })
                 }
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                className="input"
+                placeholder="Enter token name"
                 required
                 disabled={isLoading}
               />
             </div>
 
+            {/* Investment Amount Input */}
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2 text-secondary">
+                <i className="fas fa-dollar-sign mr-2 text-accent-teal"></i>
                 Investment Amount (Optional)
               </label>
               <input
@@ -157,13 +162,16 @@ export default function Home() {
                 onChange={(e) =>
                   setFormData({ ...formData, investmentAmount: e.target.value })
                 }
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                className="input"
+                placeholder="Enter investment amount"
                 disabled={isLoading}
               />
             </div>
 
+            {/* Profit/Loss Amount Input */}
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2 text-secondary">
+                <i className="fas fa-chart-line mr-2 text-accent-pink"></i>
                 Profit/Loss Amount *
               </label>
               <input
@@ -173,14 +181,17 @@ export default function Home() {
                 onChange={(e) =>
                   setFormData({ ...formData, profitLossAmount: e.target.value })
                 }
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                className="input"
+                placeholder="Enter profit/loss amount"
                 required
                 disabled={isLoading}
               />
             </div>
 
+            {/* Notes Input */}
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2 text-secondary">
+                <i className="fas fa-comment-alt mr-2 text-accent-purple"></i>
                 Notes (Optional)
               </label>
               <textarea
@@ -188,105 +199,150 @@ export default function Home() {
                 onChange={(e) =>
                   setFormData({ ...formData, notes: e.target.value })
                 }
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                className="input"
                 rows={3}
+                placeholder="Add your trading notes here"
                 disabled={isLoading}
               />
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:opacity-50 ${
-                isLoading ? "cursor-not-allowed" : ""
+              className={`btn btn-primary w-full ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isLoading}
             >
-              {isLoading ? "Adding..." : "Add Trading Activity"}
+              {isLoading ? (
+                <div className="loading-spinner"></div>
+              ) : (
+                <>
+                  <i className="fas fa-plus mr-2"></i>
+                  Add Trading Activity
+                </>
+              )}
             </button>
           </form>
         </div>
 
         {/* Today's Activities Section */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Today&apos;s Activities</h2>
+        <div className="card">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3">
+              <i className="fas fa-list-ul text-2xl icon-gradient"></i>
+              <h2 className="text-xl font-semibold">Today&apos;s Activities</h2>
+            </div>
+
+            {/* Today's Stats */}
             <div className="flex items-center gap-4">
-              <div className="text-sm">
-                <span className="mr-4">
-                  Total Trades: {todayStats.numberOfTrades}
-                </span>
-                <span
-                  className={`font-bold ${
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <div className="stats-badge">
+                  <i className="fas fa-chart-bar mr-2 text-accent-teal"></i>
+                  <span>Trades: {todayStats.numberOfTrades}</span>
+                </div>
+                <div
+                  className={`stats-badge ${
                     todayStats.totalProfitLoss > 0
-                      ? "text-green-600"
-                      : todayStats.totalProfitLoss < 0
-                      ? "text-red-600"
-                      : "text-gray-600"
+                      ? "bg-success-light text-success-dark"
+                      : "bg-error-light text-error-dark"
                   }`}
                 >
-                  Total P/L: {todayStats.totalProfitLoss > 0 ? "+" : ""}$
-                  {todayStats.totalProfitLoss.toFixed(2)}
-                </span>
+                  <i
+                    className={`fas fa-${
+                      todayStats.totalProfitLoss > 0 ? "arrow-up" : "arrow-down"
+                    } mr-2`}
+                  ></i>
+                  <span>
+                    {todayStats.totalProfitLoss > 0 ? "+" : ""}$
+                    {todayStats.totalProfitLoss.toFixed(2)}
+                  </span>
+                </div>
               </div>
+
               <button
                 onClick={fetchTodayActivities}
-                className="text-blue-500 hover:text-blue-600"
+                className="btn btn-secondary p-2"
                 disabled={isLoadingActivities}
+                aria-label="Refresh activities"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
+                <i
+                  className={`fas fa-sync ${
+                    isLoadingActivities ? "fa-spin" : ""
+                  }`}
+                ></i>
               </button>
             </div>
           </div>
 
-          <div className="space-y-4">
+          {/* Activities List dengan Scroll */}
+          <div className="space-y-4 h-[calc(100vh-300px)] min-h-[400px] max-h-[600px] overflow-y-auto pr-2 styled-scrollbar">
             {isLoadingActivities ? (
               <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                <div className="loading-spinner"></div>
               </div>
             ) : activities.length === 0 ? (
-              <p className="text-gray-500">
-                No trading activities recorded for today
-              </p>
+              <div className="text-center py-8">
+                <i className="fas fa-chart-line text-4xl mb-3 text-accent-purple"></i>
+                <p className="text-text-muted">
+                  No trading activities recorded for today
+                </p>
+              </div>
             ) : (
               activities.map((activity: TradingActivity, index) => (
                 <div
                   key={index}
-                  className={`p-4 rounded border ${
-                    activity.profitLossAmount > 0
-                      ? "border-green-500 bg-green-50"
-                      : "border-red-500 bg-red-50"
-                  }`}
+                  className={`trading-card ${
+                    activity.profitLossAmount > 0 ? "profit" : "loss"
+                  } transition-transform hover:translate-x-1`}
                 >
-                  <div className="font-medium">{activity.tokenName}</div>
-                  {activity.investmentAmount && (
-                    <div className="text-sm text-gray-600">
-                      Investment: ${activity.investmentAmount.toFixed(2)}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <i
+                        className={`fas fa-${
+                          activity.profitLossAmount > 0
+                            ? "arrow-up"
+                            : "arrow-down"
+                        } ${
+                          activity.profitLossAmount > 0
+                            ? "text-success-dark"
+                            : "text-error-dark"
+                        }`}
+                      ></i>
+                      <span className="font-medium">{activity.tokenName}</span>
                     </div>
-                  )}
+                    <span
+                      className={`stats-badge ${
+                        activity.profitLossAmount > 0
+                          ? "bg-success-light text-success-dark"
+                          : "bg-error-light text-error-dark"
+                      }`}
+                    >
+                      {activity.profitLossAmount > 0 ? "Profit" : "Loss"}
+                    </span>
+                  </div>
+
                   <div
-                    className={`font-bold ${
+                    className={`text-lg font-bold mt-2 ${
                       activity.profitLossAmount > 0
-                        ? "text-green-600"
-                        : "text-red-600"
+                        ? "text-success-dark"
+                        : "text-error-dark"
                     }`}
                   >
                     {activity.profitLossAmount > 0 ? "+" : ""}$
                     {activity.profitLossAmount.toFixed(2)}
                   </div>
+
+                  {activity.investmentAmount && (
+                    <div className="text-sm text-text-muted mt-2">
+                      <i className="fas fa-wallet mr-2 text-accent-teal"></i>
+                      Investment: ${activity.investmentAmount.toFixed(2)}
+                    </div>
+                  )}
+
                   {activity.notes && (
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-text-muted mt-2">
+                      <i className="fas fa-comment-alt mr-2 text-accent-purple"></i>
                       {activity.notes}
                     </div>
                   )}
@@ -298,16 +354,25 @@ export default function Home() {
       </div>
 
       {/* Calendar Section */}
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h2 className="text-xl font-semibold mb-4">Trading Calendar</h2>
+      <div className="card mb-8">
+        <div className="flex items-center gap-3 mb-6">
+          <i className="fas fa-calendar text-2xl icon-gradient"></i>
+          <h2 className="text-xl font-semibold">Trading Calendar</h2>
+        </div>
         <Calendar />
       </div>
 
-      {/* Footer dengan info timestamp */}
-      <div className="text-center text-sm text-gray-500">
-        <p>Current UTC Time: {currentTime}</p>
-        <p>User: mamatqurtifa</p>
-      </div>
+      {/* Footer */}
+      <footer className="text-center space-y-2 space-x-2">
+        <div className="stats-badge inline-flex items-center gap-2">
+          <i className="far fa-clock text-accent-purple"></i>
+          <span>{currentTime}</span>
+        </div>
+        <div className="stats-badge inline-flex items-center gap-2">
+          <i className="far fa-user text-accent-teal"></i>
+          <span>mamatqurtifa</span>
+        </div>
+      </footer>
     </main>
   );
 }

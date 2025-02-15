@@ -2,20 +2,290 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Light Theme */
+:root[data-theme="light"] {
+  /* Base Colors */
+  --background: #f8fafc;
+  --foreground: #1e293b;
+
+  /* Primary Colors */
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-200: #bfdbfe;
+  --primary-300: #93c5fd;
+  --primary-400: #60a5fa;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+
+  /* Accent Colors */
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --accent-orange: #f97316;
+  --accent-teal: #14b8a6;
+
+  /* UI Elements */
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-hover: #f1f5f9;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-focus: #3b82f6;
+
+  /* Status Colors */
+  --success-light: #dcfce7;
+  --success-dark: #22c55e;
+  --error-light: #fee2e2;
+  --error-dark: #ef4444;
+  --warning-light: #fef3c7;
+  --warning-dark: #f59e0b;
+
+  /* Text Colors */
+  --text-muted: #64748b;
+  --text-secondary: #475569;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark Theme */
+:root[data-theme="dark"] {
+  /* Base Colors */
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+
+  /* Primary Colors */
+  --primary-50: #1e293b;
+  --primary-100: #334155;
+  --primary-200: #475569;
+  --primary-300: #64748b;
+  --primary-400: #94a3b8;
+  --primary-500: #60a5fa;
+  --primary-600: #3b82f6;
+
+  /* Accent Colors */
+  --accent-purple: #a78bfa;
+  --accent-pink: #f472b6;
+  --accent-orange: #fb923c;
+  --accent-teal: #2dd4bf;
+
+  /* UI Elements */
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --card-hover: #283548;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-focus: #60a5fa;
+
+  /* Status Colors */
+  --success-light: #064e3b;
+  --success-dark: #34d399;
+  --error-light: #7f1d1d;
+  --error-dark: #f87171;
+  --warning-light: #78350f;
+  --warning-dark: #fbbf24;
+
+  /* Text Colors */
+  --text-muted: #94a3b8;
+  --text-secondary: #cbd5e1;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
+/* Global Styles */
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  transition: all 0.3s ease;
+}
+
+/* Components */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: var(--card-hover);
+}
+
+/* Buttons */
+.btn {
+  @apply px-4 py-2 rounded-xl font-medium transition-all duration-200;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  border: none;
+}
+
+.btn-secondary {
+  background: var(--primary-100);
+  color: var(--primary-600);
+}
+
+.btn-accent-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+  color: white;
+}
+
+.btn-accent-pink {
+  background: linear-gradient(135deg, var(--accent-pink), #db2777);
+  color: white;
+}
+
+/* Inputs */
+.input {
+  @apply w-full px-4 py-2 rounded-xl transition-all duration-200;
+  background-color: var(--input-bg);
+  border: 2px solid var(--input-border);
+  color: var(--foreground);
+}
+
+.input:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Trading Cards */
+.trading-card {
+  @apply rounded-xl p-4;
+  background: linear-gradient(135deg, var(--card-bg), var(--card-hover));
+  border: 1px solid var(--card-border);
+  transition: all 0.3s ease;
+}
+
+.trading-card.profit {
+  background: linear-gradient(
+    135deg,
+    var(--success-light),
+    rgba(34, 197, 94, 0.1)
+  );
+  border-color: var(--success-dark);
+}
+
+.trading-card.loss {
+  background: linear-gradient(
+    135deg,
+    var(--error-light),
+    rgba(239, 68, 68, 0.1)
+  );
+  border-color: var(--error-dark);
+}
+
+/* Stats Badge */
+.stats-badge {
+  @apply px-3 py-1 rounded-full text-sm font-medium;
+  background: var(--primary-100);
+  color: var(--primary-600);
+}
+
+/* Icons */
+.icon-gradient {
+  background: linear-gradient(135deg, var(--primary-500), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Loading Animation */
+.loading-spinner {
+  @apply w-6 h-6 rounded-full;
+  border: 3px solid var(--primary-100);
+  border-top-color: var(--primary-500);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom Scrollbar Styling */
+.styled-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-400) transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--primary-400);
+  border-radius: 20px;
+  border: transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-500);
+}
+
+.trading-card:hover {
+  transform: translateX(4px);
+}
+
+/* Calendar Day Status Colors */
+.calendar-day-profit {
+  background: var(--success-light);
+  border-color: var(--success-dark);
+}
+
+.calendar-day-loss {
+  background: var(--error-light);
+  border-color: var(--error-dark);
+}
+
+.calendar-day-inactive {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+/* Profit Loss Indicators */
+.profit-indicator {
+  color: var(--success-dark);
+}
+
+.loss-indicator {
+  color: var(--error-dark);
+}
+
+.neutral-indicator {
+  color: var(--text-muted);
+  opacity: 0.7;
 }

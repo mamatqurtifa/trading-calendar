@@ -25,7 +25,7 @@ export default function Calendar() {
 
   useEffect(() => {
     fetchCalendarData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDate]);
 
   const fetchCalendarData = async () => {
@@ -42,7 +42,6 @@ export default function Calendar() {
       }
 
       const data = await response.json();
-
       const monthStart = startOfMonth(currentDate);
       const monthEnd = endOfMonth(currentDate);
       const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -78,33 +77,41 @@ export default function Calendar() {
   };
 
   const getDayClasses = (day: CalendarDay) => {
-    const baseClasses = "p-3 border relative min-h-[80px]";
+    const baseClasses =
+      "p-4 relative min-h-[100px] rounded-xl transition-all duration-200";
     const today = isSameDay(day.date, new Date());
 
     if (!isSameMonth(day.date, currentDate)) {
-      return `${baseClasses} bg-gray-50 text-gray-400`;
+      return `${baseClasses} bg-primary-50/30 text-text-muted`;
     }
 
     if (today) {
-      return `${baseClasses} bg-blue-50 border-blue-200`;
+      return `${baseClasses} bg-primary-100 border-2 border-primary-500 shadow-md`;
     }
 
-    if (!day.status) return baseClasses;
+    if (!day.totalProfitLoss) {
+      return `${baseClasses} bg-card-bg border border-card-border hover:bg-card-hover`;
+    }
 
-    const statusClasses = {
-      PROFIT: "bg-green-50 border-green-200",
-      LOSS: "bg-red-50 border-red-200",
-      INACTIVE: "bg-gray-50 border-gray-200",
-    };
+    // Status berdasarkan profit/loss
+    if (day.totalProfitLoss > 0) {
+      return `${baseClasses} bg-success-light/20 border border-success-dark/20 hover:bg-success-light/30`;
+    } else if (day.totalProfitLoss < 0) {
+      return `${baseClasses} bg-error-light/20 border border-error-dark/20 hover:bg-error-light/30`;
+    }
 
-    return `${baseClasses} ${statusClasses[day.status]}`;
+    return `${baseClasses} bg-card-bg border border-card-border hover:bg-card-hover`;
   };
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 text-red-600 rounded">
-        Error: {error}
-        <button onClick={fetchCalendarData} className="ml-4 underline">
+      <div className="p-6 bg-error-light border border-error-dark/20 rounded-xl text-error-dark">
+        <div className="flex items-center gap-3 mb-2">
+          <i className="fas fa-exclamation-circle text-xl"></i>
+          <span className="font-medium">Error: {error}</span>
+        </div>
+        <button onClick={fetchCalendarData} className="btn btn-primary mt-2">
+          <i className="fas fa-sync-alt mr-2"></i>
           Retry
         </button>
       </div>
@@ -113,69 +120,106 @@ export default function Calendar() {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center mb-4">
+      {/* Calendar Header */}
+      <div className="flex justify-between items-center mb-6">
         <button
           onClick={previousMonth}
-          className="px-4 py-2 text-sm bg-white border rounded hover:bg-gray-50 disabled:opacity-50"
+          className="btn btn-secondary flex items-center gap-2"
           disabled={isLoading}
         >
-          ← Previous
+          <i className="fas fa-chevron-left"></i>
+          <span className="hidden sm:inline">Previous</span>
         </button>
-        <h2 className="text-xl font-semibold">
+
+        <h2 className="text-2xl font-bold text-center">
           {format(currentDate, "MMMM yyyy")}
         </h2>
+
         <button
           onClick={nextMonth}
-          className="px-4 py-2 text-sm bg-white border rounded hover:bg-gray-50 disabled:opacity-50"
+          className="btn btn-secondary flex items-center gap-2"
           disabled={isLoading}
         >
-          Next →
+          <span className="hidden sm:inline">Next</span>
+          <i className="fas fa-chevron-right"></i>
         </button>
       </div>
 
       {isLoading ? (
         <div className="h-96 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          <div className="loading-spinner"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-3">
+          {/* Calendar Days Header */}
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div
               key={day}
-              className="text-center font-medium py-2 text-gray-600"
+              className="text-center font-medium py-2 text-text-secondary"
             >
               {day}
             </div>
           ))}
 
+          {/* Calendar Days */}
           {calendarDays.map((day, index) => (
             <div key={index} className={getDayClasses(day)}>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-start">
                 <span
-                  className={`text-sm ${
-                    isSameDay(day.date, new Date()) ? "font-bold" : ""
+                  className={`text-sm font-medium ${
+                    isSameDay(day.date, new Date())
+                      ? "text-primary-600"
+                      : "text-text-secondary"
                   }`}
                 >
                   {format(day.date, "d")}
                 </span>
                 {day.numberOfTrades !== undefined && day.numberOfTrades > 0 && (
-                  <span className="text-xs bg-gray-200 rounded-full px-2">
+                  <span className="stats-badge text-xs">
+                    <i className="fas fa-chart-line mr-1 text-accent-teal"></i>
                     {day.numberOfTrades}
                   </span>
                 )}
               </div>
-              {day.totalProfitLoss !== undefined && (
-                <div
-                  className={`text-sm mt-1 ${
-                    day.totalProfitLoss > 0
-                      ? "text-green-600"
-                      : day.totalProfitLoss < 0
-                      ? "text-red-600"
-                      : "text-gray-600"
-                  }`}
-                >
-                  {day.totalProfitLoss > 0 ? "+" : ""}$
-                  {day.totalProfitLoss.toFixed(2)}
+
+              {day.totalProfitLoss !== undefined ? (
+                <div className="absolute bottom-3 left-3 right-3">
+                  {day.totalProfitLoss === 0 ? (
+                    // No Activity atau P/L = 0
+                    <div className="text-sm font-medium text-text-muted">
+                      <i className="fas fa-minus mr-1"></i>
+                      $0.00
+                    </div>
+                  ) : (
+                    // Profit atau Loss
+                    <div
+                      className={`text-sm font-medium flex items-center ${
+                        day.totalProfitLoss > 0
+                          ? "text-success-dark"
+                          : "text-error-dark"
+                      }`}
+                    >
+                      <div className="flex items-center w-full">
+                        <i
+                          className={`fas fa-arrow-${
+                            day.totalProfitLoss > 0 ? "up" : "down"
+                          } mr-2`}
+                        ></i>
+                        <span>
+                          {day.totalProfitLoss > 0 ? "+" : ""}$
+                          {Math.abs(day.totalProfitLoss).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Tidak ada data
+                <div className="absolute bottom-3 left-3 right-3">
+                  <div className="text-sm font-medium text-text-muted opacity-50">
+                    <i className="fas fa-minus mr-1"></i>
+                    No activity
+                  </div>
                 </div>
               )}
             </div>
