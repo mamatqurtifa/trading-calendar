@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "buildCommand": "npm run build",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "functions": {
+        "api/**/*": {
+            "memory": 1024
+        }
+    },
+    "env": {
+        "PRISMA_CLI_BINARY_TARGETS": "native,rhel-openssl-1.0.x"
+    }
+}
